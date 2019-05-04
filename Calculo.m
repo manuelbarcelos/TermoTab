@@ -1,7 +1,9 @@
-% Autor: Manuel Nascimento Dias Barcelos Júnior (professor)
+% Código: Consulta a Tabelas Propriedades Termodinâmicas 
+% Responsável: Manuel Nascimento Dias Barcelos Júnior (professor)
 % e-mail: manuelbarcelos@aerospace.unb.br
 %         manuelbarcelos@unb.br
-% Código: TermoTab0.3
+% Código: TermoTab0.5
+% Data: 05/05/2019
 
 clc;
 clear all;
@@ -21,8 +23,8 @@ format long;
 % r:relativo;
 
 % Definição do tipo de fluido de trabalho (Substância Pura ou Gás Ideal)
-TipTab=' H2O ';
-%TipTab='R134a';
+%TipTab=' H2O ';
+TipTab='R134a';
 %TipTab=' AR  ';
 
 % Entrada das propriedades que caracterizam o estado da Substância Pura
@@ -30,9 +32,9 @@ TipTab=' H2O ';
 % Escolher duas propriedades intensivas e independentes para definir o
 % estado (apenas a estas atribuir um valor numérico), ou uma propriedade 
 % intensiva e o título, deixando as outras iguais a zero, e no caso do
-% título igual a NaN.
-% T=0; P=0; v=0; u=0; h=0; s=0; x=NaN; 
-T=80; P=500; v=0; u=0; h=0; s=0; x=NaN; 
+% título igual a -1.
+% T=0; P=0; v=0; u=0; h=0; s=0; x=-1; 
+T=0; P=0; v=0; u=0; h=0; s=0; x=-1; 
 VetPropSubPurEnt=[T P v u h s x];
 VetPropSubPurSai=zeros(1,15);
 

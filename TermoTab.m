@@ -1,7 +1,9 @@
-% Autor: Manuel Nascimento Dias Barcelos Júnior (professor)
+% Código: Consulta a Tabelas Propriedades Termodinâmicas 
+% Responsável: Manuel Nascimento Dias Barcelos Júnior (professor)
 % e-mail: manuelbarcelos@aerospace.unb.br
 %         manuelbarcelos@unb.br
-% Código: TermoTab0.3
+% Código: TermoTab0.5
+% Data: 04/05/2019
 
 function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt,VetPropGasIdEnt)
 
@@ -48,11 +50,13 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
         [Pvsa, TabPvsa, nPvsa, TabPlvs, TabTlvs, TabArGI]=Tabelas(TipTab);
         Pvsa=1000*Pvsa;
         n=nPvsa;
+        N=length(Pvsa);
     elseif TipTab=='R134a'
         disp('As tabelas das propriedades do R134a foram carregadas!')
         [Pvsa, TabPvsa, nPvsa, TabPlvs, TabTlvs, TabArGI]=Tabelas(TipTab);
         Pvsa=1000*Pvsa;
         n=nPvsa;
+        N=length(Pvsa);
     elseif TipTab==' AR  '
         disp('As tabelas das propriedades do ar foram carregadas!')
         [Pvsa, TabPvsa, nPvsa, TabPlvs, TabTlvs, TabArGI]=Tabelas(TipTab);
@@ -323,7 +327,7 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
-            elseif ((T~=0 & v~=0) & (P==0 & u==0 & h==0 & s==0)) | ((T==0 & v~=0) & (P==0 & u==0 & h==0 & s==0))
+            elseif ((T~=0 & v~=0) & (P==0 & u==0 & h==0 & s==0 & x<0)) | ((T==0 & v~=0) & (P==0 & u==0 & h==0 & s==0 & x<0))
                 i=find(TabTlvs(:,1)>=T,1);
                 if i>0
                     vlr=interp1(TabTlvs(:,1),TabTlvs(:,3),T);
@@ -351,13 +355,37 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
                     elseif v>vvr
                         Reg='VSA';
                         disp('Região: Vapor Superaquecido')
-                        disp('Esta busca não está implementada!!!!!')
+                        for j=1:N
+                            vsa(j)=interp1(TabPvsa(1:n(j),1,j),TabPvsa(1:n(j),2,j),T);
+                        end
+                        k=find(vsa<=v,1);
+                        if v==vsa(k)
+                            P=Pvsa(k);
+                            u=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),3,k),T);
+                            h=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),4,k),T);
+                            s=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),5,k),T);
+                        else
+                            Pj(1)=Pvsa(k);
+                            Pj(2)=Pvsa(k+1);
+                            vj(1)=vsa(k);
+                            vj(2)=vsa(k+1);
+                            uj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),3,k),T);
+                            hj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),4,k),T);
+                            sj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),5,k),T);
+                            uj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),3,k+1),T);
+                            hj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),4,k+1),T);
+                            sj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),5,k+1),T);
+                            P=interp1(vj,Pj,v);
+                            u=interp1(Pj,uj,P);
+                            h=interp1(Pj,hj,P);
+                            s=interp1(Pj,sj,P);
+                        end
                     end
                 elseif T < TabTlvs(1,1) | T > TabTlvs(end,1)
                     disp('Valor de temperatura informado está fora do intervalo de consulta!!!!!')                    
                 end
 %--------------------------------------------------------------------------
-            elseif ((T~=0 & u~=0) & (P==0 & v==0 & h==0 & s==0)) | ((T==0 & u~=0) & (P==0 & v==0 & h==0 & s==0))
+            elseif ((T~=0 & u~=0) & (P==0 & v==0 & h==0 & s==0 & x<0)) | ((T==0 & u~=0) & (P==0 & v==0 & h==0 & s==0 & x<0))
                 i=find(TabTlvs(:,1)>=T,1);
                 if i>0
                     ulr=interp1(TabTlvs(:,1),TabTlvs(:,5),T);
@@ -385,13 +413,37 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
                     elseif u>uvr
                         Reg='VSA';
                         disp('Região: Vapor Superaquecido')
-                        disp('Esta busca não está implementada!!!!!')
+                        for j=1:N
+                            usa(j)=interp1(TabPvsa(1:n(j),1,j),TabPvsa(1:n(j),3,j),T);
+                        end
+                        k=find(usa<=u,1);
+                        if u==usa(k)
+                            P=Pvsa(k);
+                            v=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),2,k),T);
+                            h=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),4,k),T);
+                            s=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),5,k),T);
+                        else
+                            Pj(1)=Pvsa(k);
+                            Pj(2)=Pvsa(k+1);
+                            uj(1)=usa(k);
+                            uj(2)=usa(k+1);
+                            vj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),2,k),T);
+                            hj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),4,k),T);
+                            sj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),5,k),T);
+                            vj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),2,k+1),T);
+                            hj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),4,k+1),T);
+                            sj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),5,k+1),T);
+                            P=interp1(uj,Pj,u);
+                            v=interp1(Pj,vj,P);
+                            h=interp1(Pj,hj,P);
+                            s=interp1(Pj,sj,P);
+                        end
                     end
                 elseif T < TabTlvs(1,1) | T > TabTlvs(end,1)
                     disp('Valor de temperatura informado está fora do intervalo de consulta!!!!!')                    
                 end
 %--------------------------------------------------------------------------
-            elseif ((T~=0 & h~=0) & (P==0 & u==0 & v==0 & s==0)) | ((T==0 & h~=0) & (P==0 & u==0 & v==0 & s==0))
+            elseif ((T~=0 & h~=0) & (P==0 & u==0 & v==0 & s==0 & x<0)) | ((T==0 & h~=0) & (P==0 & u==0 & v==0 & s==0 & x<0))
                 i=find(TabTlvs(:,1)>=T,1);
                 if i>0
                     hlr=interp1(TabTlvs(:,1),TabTlvs(:,8),T);
@@ -419,13 +471,37 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
                     elseif h>hvr
                         Reg='VSA';
                         disp('Região: Vapor Superaquecido')
-                        disp('Esta busca não está implementada!!!!!')
+                        for j=1:N
+                            hsa(j)=interp1(TabPvsa(1:n(j),1,j),TabPvsa(1:n(j),4,j),T);
+                        end
+                        k=find(hsa<=h,1);
+                        if h==hsa(k)
+                            P=Pvsa(k);
+                            v=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),2,k),T);
+                            u=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),3,k),T);
+                            s=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),5,k),T);
+                        else
+                            Pj(1)=Pvsa(k);
+                            Pj(2)=Pvsa(k+1);
+                            hj(1)=hsa(k);
+                            hj(2)=hsa(k+1);
+                            vj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),2,k),T);
+                            uj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),3,k),T);
+                            sj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),5,k),T);
+                            vj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),2,k+1),T);
+                            uj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),3,k+1),T);
+                            sj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),5,k+1),T);
+                            P=interp1(hj,Pj,h);
+                            v=interp1(Pj,vj,P);
+                            u=interp1(Pj,uj,P);
+                            s=interp1(Pj,sj,P);
+                        end
                     end
                 elseif T < TabTlvs(1,1) | T > TabTlvs(end,1)
                     disp('Valor de temperatura informado está fora do intervalo de consulta!!!!!')                    
                 end
 %--------------------------------------------------------------------------
-            elseif ((T~=0 & s~=0) & (P==0 & u==0 & h==0 & v==0)) | ((T==0 & s~=0) & (P==0 & u==0 & h==0 & v==0))
+            elseif ((T~=0 & s~=0) & (P==0 & u==0 & h==0 & v==0 & x<0)) | ((T==0 & s~=0) & (P==0 & u==0 & h==0 & v==0 & x<0))
                 i=find(TabTlvs(:,1)>=T,1);
                 if i>0
                     slr=interp1(TabTlvs(:,1),TabTlvs(:,11),T);
@@ -453,7 +529,31 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
                     elseif s>svr
                         Reg='VSA';
                         disp('Região: Vapor Superaquecido')
-                        disp('Esta busca não está implementada!!!!!')
+                        for j=1:N
+                            ssa(j)=interp1(TabPvsa(1:n(j),1,j),TabPvsa(1:n(j),5,j),T);
+                        end
+                        k=find(ssa<=s,1);
+                        if s==ssa(k)
+                            P=Pvsa(k);
+                            v=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),2,k),T);
+                            u=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),3,k),T);
+                            h=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),4,k),T);
+                        else
+                            Pj(1)=Pvsa(k);
+                            Pj(2)=Pvsa(k+1);
+                            sj(1)=ssa(k);
+                            sj(2)=ssa(k+1);
+                            vj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),2,k),T);
+                            uj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),3,k),T);
+                            hj(1)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),4,k),T);
+                            vj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),2,k+1),T);
+                            uj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),3,k+1),T);
+                            hj(2)=interp1(TabPvsa(1:n(k+1),1,k+1),TabPvsa(1:n(k+1),4,k+1),T);
+                            P=interp1(sj,Pj,s);
+                            v=interp1(Pj,vj,P);
+                            u=interp1(Pj,uj,P);
+                            h=interp1(Pj,hj,P);
+                        end
                     end
                 elseif T < TabTlvs(1,1) | T > TabTlvs(end,1)
                     disp('Valor de temperatura informado está fora do intervalo de consulta!!!!!')                    
@@ -481,7 +581,7 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
                     disp('Valor de temperatura informado está fora do intervalo de consulta!!!!!')                    
                 end
 %--------------------------------------------------------------------------
-            elseif ((v~=0 & (x==0 | x==1)) & (T==0 & u==0 & h==0 & s==0)) | ((T==0 & (x>=0 & x<=1)) & (v==0 & u==0 & h==0 & s==0))
+            elseif ((v~=0 & (x==0 | x==1)) & (T==0 & u==0 & h==0 & s==0))
                 if x==0
                     i=find(TabTlvs(:,3)>=v,1);
                     if i>0
@@ -528,7 +628,7 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
                     disp('O volume específico e o título diferente de 0 ou 1 não definem um estado.')
                 end
 %--------------------------------------------------------------------------
-            elseif ((u~=0 & (x==0 | x==1)) & (T==0 & v==0 & h==0 & s==0)) | ((T==0 & (x>=0 & x<=1)) & (v==0 & u==0 & h==0 & s==0))
+            elseif ((u~=0 & (x==0 | x==1)) & (T==0 & v==0 & h==0 & s==0))
                 if x==0
                     i=find(TabTlvs(:,5)>=u,1);
                     if i>0
@@ -575,7 +675,7 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
                     disp('A energia interna específica e o título diferente de 0 ou 1 não definem um estado.')
                 end
 %--------------------------------------------------------------------------
-            elseif ((h~=0 & (x==0 | x==1)) & (T==0 & v==0 & u==0 & s==0)) | ((T==0 & (x>=0 & x<=1)) & (v==0 & u==0 & h==0 & s==0))
+            elseif ((h~=0 & (x==0 | x==1)) & (T==0 & v==0 & u==0 & s==0))
                 if x==0
                     i=find(TabTlvs(:,8)>=h,1);
                     if i>0
@@ -622,7 +722,7 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
                     disp('A entalpia específica e o título diferente de 0 ou 1 não definem um estado.')
                 end
 %--------------------------------------------------------------------------
-            elseif ((s~=0 & (x==0 | x==1)) & (T==0 & v==0 & u==0 & h==0)) | ((T==0 & (x>=0 & x<=1)) & (v==0 & u==0 & h==0 & s==0))
+            elseif ((s~=0 & (x==0 | x==1)) & (T==0 & v==0 & u==0 & h==0))
                 if x==0
                     i=find(TabTlvs(:,11)>=s,1);
                     if i>0
