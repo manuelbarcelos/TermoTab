@@ -817,7 +817,33 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
                         end
                     end
                 elseif T < TabTlvs(1,1) | T > TabTlvs(end,1)
-                    disp('Valor de temperatura informado está fora do intervalo de consulta!!!!!')                    
+                    %disp('Valor de temperatura informado está fora do intervalo de consulta!!!!!')                    
+                    Reg='VSA';
+                    disp('Região: Vapor Superaquecido')
+                    j=find(Pvsa(:)==P,1);
+                    if j>0
+                        v=interp1(TabPvsa(1:n(j),1,j),TabPvsa(1:n(j),2,j),T);
+                        u=interp1(TabPvsa(1:n(j),1,j),TabPvsa(1:n(j),3,j),T);
+                        h=interp1(TabPvsa(1:n(j),1,j),TabPvsa(1:n(j),4,j),T);
+                        s=interp1(TabPvsa(1:n(j),1,j),TabPvsa(1:n(j),5,j),T);
+                    else
+                        k=find(Pvsa(:)>P,1);
+                        if k>0
+                            vk(1)=interp1(TabPvsa(1:n(k-1),1,k-1),TabPvsa(1:n(k-1),2,k-1),T);
+                            uk(1)=interp1(TabPvsa(1:n(k-1),1,k-1),TabPvsa(1:n(k-1),3,k-1),T);
+                            hk(1)=interp1(TabPvsa(1:n(k-1),1,k-1),TabPvsa(1:n(k-1),4,k-1),T);
+                            sk(1)=interp1(TabPvsa(1:n(k-1),1,k-1),TabPvsa(1:n(k-1),5,k-1),T);
+                            vk(2)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),2,k),T);
+                            uk(2)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),3,k),T);
+                            hk(2)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),4,k),T);
+                            sk(2)=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),5,k),T);
+                            Pk=[Pvsa(k-1) Pvsa(k)];
+                            v=interp1(Pk,vk,P);
+                            u=interp1(Pk,uk,P);
+                            h=interp1(Pk,hk,P);
+                            s=interp1(Pk,sk,P);
+                        end
+                    end
                 end
             end
             
