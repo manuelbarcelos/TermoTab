@@ -2,46 +2,58 @@
 % Responsável: Manuel Nascimento Dias Barcelos Júnior (professor)
 % e-mail: manuelbarcelos@aerospace.unb.br
 %         manuelbarcelos@unb.br
-% Código: TermoTab0.5
-% Data: 04/05/2019
+% Código: TermoTab0.6
+% Data: 23/08/2019
 
-function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt,VetPropGasIdEnt)
+function [VetPropSai,Reg]=TermoTab(TipTab,VetPropEnt)
 
     VetPropSubPurSai=zeros(1,15);
     VetPropGasIdSai=zeros(1,6);
     Reg='   ';
     ErrCarrTab=0;
     
-    contPropSP=0;
-    if VetPropSubPurEnt(1)~=0
-        contPropSP=contPropSP+1;
-    elseif VetPropSubPurEnt(2)~=0
-        contPropSP=contPropSP+1;
-    elseif VetPropSubPurEnt(3)~=0
-        contPropSP=contPropSP+1;
-    elseif VetPropSubPurEnt(4)~=0
-        contPropSP=contPropSP+1;
-    elseif VetPropSubPurEnt(5)~=0
-        contPropSP=contPropSP+1;
-    elseif VetPropSubPurEnt(6)~=0
-        contPropSP=contPropSP+1;
-    elseif VetPropSubPurEnt(7)~=NaN
-        contPropSP=contPropSP+1;
+    if (TipTab==' H2O ' | TipTab=='R134a')
+        VetPropSubPurEnt=VetPropEnt;
+        VetPropGasIdEnt=[0 0 0 0 0 0];
+    elseif (TipTab==' AR  ')
+        VetPropGasIdEnt=VetPropEnt;
+        VetPropSubPurEnt=[0 0 0 0 0 0 -1];
     end
-        
+    
+    contPropSP=0;
+    if (TipTab==' H2O ' | TipTab=='R134a')
+        if VetPropSubPurEnt(1)~=0
+            contPropSP=contPropSP+1;
+        elseif VetPropSubPurEnt(2)~=0
+            contPropSP=contPropSP+1;
+        elseif VetPropSubPurEnt(3)~=0
+            contPropSP=contPropSP+1;
+        elseif VetPropSubPurEnt(4)~=0
+            contPropSP=contPropSP+1;
+        elseif VetPropSubPurEnt(5)~=0
+            contPropSP=contPropSP+1;
+        elseif VetPropSubPurEnt(6)~=0
+            contPropSP=contPropSP+1;
+        elseif VetPropSubPurEnt(7)~=-1
+            contPropSP=contPropSP+1;
+        end 
+    end
+    
     contPropGI=0;
-    if VetPropGasIdEnt(1)~=0
-        contPropGI=contPropGI+1;
-    elseif VetPropGasIdEnt(2)~=0
-        contPropGI=contPropGI+1;
-    elseif VetPropGasIdEnt(3)~=0
-        contPropGI=contPropGI+1;
-    elseif VetPropGasIdEnt(4)~=0
-        contPropGI=contPropGI+1;
-    elseif VetPropGasIdEnt(5)~=0
-        contPropGI=contPropGI+1;
-    elseif VetPropGasIdEnt(6)~=0
-        contPropGI=contPropGI+1;
+    if (TipTab==' AR  ')
+        if VetPropGasIdEnt(1)~=0
+            contPropGI=contPropGI+1;
+        elseif VetPropGasIdEnt(2)~=0
+            contPropGI=contPropGI+1;
+        elseif VetPropGasIdEnt(3)~=0
+            contPropGI=contPropGI+1;
+        elseif VetPropGasIdEnt(4)~=0
+            contPropGI=contPropGI+1;
+        elseif VetPropGasIdEnt(5)~=0
+            contPropGI=contPropGI+1;
+        elseif VetPropGasIdEnt(6)~=0
+            contPropGI=contPropGI+1;
+        end
     end
     
 % Carregar tabelas do fluido de trabalho
@@ -192,8 +204,8 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
             elseif (P~=0 & h~=0) & (T==0 & u==0 & v==0 & s==0)
                 i=find(TabPlvs(:,1)>=P,1);
                 if i>0
-                    hlr=interp1(TabPlvs(:,1),TabTlvs(:,8),P);
-                    hvr=interp1(TabPlvs(:,1),TabTlvs(:,10),P);
+                    hlr=interp1(TabPlvs(:,1),TabPlvs(:,8),P);
+                    hvr=interp1(TabPlvs(:,1),TabPlvs(:,10),P);
                     if h>=hlr & h<=hvr
                         Reg='MLV';
                         disp('Região: Mistura Líquido e Vapor Saturados')
@@ -848,6 +860,7 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
             end
             
             VetPropSubPurSai=[T P v u h s x vl vv ul uv hl hv sl sv];
+            VetPropSai=VetPropSubPurSai;
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
@@ -934,6 +947,7 @@ function [VetPropSubPurSai,VetPropGasIdSai,Reg]=TermoTab(TipTab,VetPropSubPurEnt
             end
 %--------------------------------------------------------------------------
             VetPropGasIdSai=[T u h s0 vr Pr];
+            VetPropSai=VetPropGasIdSai;
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------

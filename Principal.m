@@ -23,10 +23,23 @@ format long;
 % r:relativo;
 
 % Definição do tipo de fluido de trabalho (Substância Pura ou Gás Ideal)
-TipTab=' H2O ';
-%TipTab='R134a';
-%TipTab=' AR  ';
+disp('Definição do fluido de trabalho:')
+disp('1 para H2O')
+disp('2 para R134a')
+disp('3 para Ar')
+FldTrab = input('Entre o número:');
+clc;
+if FldTrab==1
+    TipTab=' H2O ';
+elseif FldTrab==2
+    TipTab='R134a';
+elseif FldTrab==3
+    TipTab=' AR  ';
+end
 
+disp('--------------------------------------------------------------------------')
+
+if TipTab==' H2O ' | TipTab=='R134a'
 % Entrada das propriedades que caracterizam o estado da Substância Pura
 % T[oC]; P[kPa]; v[m3/kg]; u[kJ/kg]; h[kJ/kg]; s[kJ/kgK]; 
 % Escolher duas propriedades intensivas e independentes para definir o
@@ -34,21 +47,99 @@ TipTab=' H2O ';
 % intensiva e o título, deixando as outras iguais a zero, e no caso do
 % título igual a -1.
 % T=0; P=0; v=0; u=0; h=0; s=0; x=-1; 
-T=0; P=101.325; v=0; u=0; h=0; s=0; x=0; 
-VetPropSubPurEnt=[T P v u h s x];
-VetPropSubPurSai=zeros(1,15);
-
+   T=0; P=0; v=0; u=0; h=0; s=0; x=-1;
+   disp('Números identificadores das propriedades:')
+   disp('1 para Temperatura, T, em [oC]')
+   disp('2 para Pressão, P, em [kPa]')
+   disp('3 para Volume específico, v, em [m3/kg]')
+   disp('4 para Energia interna específica, u, em [kJ/kg]')
+   disp('5 para Entalpia específica, h, em [kJ/kg]')
+   disp('6 para Entropia específica, s, em [kJ/kgK]')
+   disp('7 para Título, x, em [m3/kg]')
+   disp('Primeira propriedade:')
+   PropId1 = input('Entre o número identificador:');
+   Prop1 = input('Entre o valor da propriedade:');
+   disp('Segunda propriedade:')
+   PropId2 = input('Entre o número identificador:');
+   Prop2 = input('Entre o valor da primeira propriedade:');
+   clc;   
+   if PropId1==1
+       T=Prop1;
+   elseif PropId1==2
+       P=Prop1;
+   elseif PropId1==3
+       v=Prop1;
+   elseif PropId1==4
+       u=Prop1;
+   elseif PropId1==5
+       h=Prop1;
+   elseif PropId1==6
+       s=Prop1;
+   elseif PropId1==7
+       x=Prop1;
+   else
+       disp('Escolha errada da propriedade 1!')
+       TipTab='';
+   end
+   if PropId2==1
+       T=Prop2;
+   elseif PropId2==2
+       P=Prop2;
+   elseif PropId2==3
+       v=Prop2;
+   elseif PropId2==4
+       u=Prop2;
+   elseif PropId2==5
+       h=Prop2;
+   elseif PropId2==6
+       s=Prop2;
+   elseif PropId2==7
+       x=Prop2;
+   else
+       disp('Escolha errada da propriedade 2!')
+       TipTab='';
+   end
+   VetPropSubPurEnt=[T P v u h s x];
+   VetPropSubPurSai=zeros(1,15);
+   
+elseif TipTab==' AR  '
 % Entrada das propriedades que caracterizam o estado do Gás Ideal
 % T[K]; u[kJ/kg]; h[kJ/kg]; s0[kJ/kgK]; 
 % Escolher umas das entradas e apenas a esta atribuir um valor numérico, 
 % uma vez que estas dependem só da temperatura gás ideal, deixando a outras
 % iguais a zero. 
 % T=0; u=0; h=0; s0=0; vr=0; Pr=0;
-T=0; u=0; h=0; s0=0; vr=0; Pr=0;
-VetPropGasIdEnt=[T u h s0 vr Pr];
-VetPropGasIdSai=zeros(1,6);
+   T=0; u=0; h=0; s0=0; vr=0; Pr=0;
+   disp('Números identificadores das entradas:')
+   disp('1 para Temperatura, T, em [K]')
+   disp('2 para Energia interna específica, u, em [kJ/kg]')
+   disp('3 para Entalpia específica, h, em [kJ/kg]')
+   disp('4 para Entropia específica, s0, em [kJ/kgK]')
+   disp('5 para Volume relativo, vr')
+   disp('6 para Pressão relativa, Pr')
+   PropId1 = input('Entre o número identificador:');
+   Prop1 = input('Entre o valor da entrada:');
+   clc;   
+   if PropId1==1
+       T=Prop1;
+   elseif PropId1==2
+       u=Prop1;
+   elseif PropId1==3
+       h=Prop1;
+   elseif PropId1==4
+       s0=Prop1;
+   elseif PropId1==5
+       vr=Prop1;
+   elseif PropId1==6
+       Pr=Prop1;
+   else
+       disp('Escolha errada da entrada!')
+       TipTab='';
+   end
+   VetPropGasIdEnt=[T u h s0 vr Pr];
+   VetPropGasIdSai=zeros(1,6);
 
-disp('--------------------------------------------------------------------------')
+end
 
 if TipTab==' H2O ' | TipTab=='R134a'
 % Chamada da função de cálculo de propriedades

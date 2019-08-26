@@ -2,8 +2,8 @@
 % Responsável: Manuel Nascimento Dias Barcelos Júnior (professor)
 % e-mail: manuelbarcelos@aerospace.unb.br
 %         manuelbarcelos@unb.br
-% Código: TermoTab0.5
-% Data: 04/05/2019
+% Código: TermoTab0.6
+% Data: 23/08/2019
 
 function [Pvsa, TabPvsa, n1, TabPlvs, TabTlvs, TabArGI]=Tabelas(TipTab)
 
