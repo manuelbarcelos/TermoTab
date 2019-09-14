@@ -61,7 +61,7 @@ if TipTab==' H2O ' | TipTab=='R134a'
    Prop1 = input('Entre o valor da propriedade:');
    disp('Segunda propriedade:')
    PropId2 = input('Entre o número identificador:');
-   Prop2 = input('Entre o valor da primeira propriedade:');
+   Prop2 = input('Entre o valor da propriedade:');
    clc;   
    if PropId1==1
        T=Prop1;
