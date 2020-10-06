@@ -377,6 +377,7 @@ function [VetPropSai,Reg]=TermoTab(TipTab,VetPropEnt)
                             h=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),4,k),T);
                             s=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),5,k),T);
                         else
+                            if (vsa(k+1)-vsa(k)) < 0.0 k=k-1; end
                             Pj(1)=Pvsa(k);
                             Pj(2)=Pvsa(k+1);
                             vj(1)=vsa(k);
@@ -435,6 +436,7 @@ function [VetPropSai,Reg]=TermoTab(TipTab,VetPropEnt)
                             h=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),4,k),T);
                             s=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),5,k),T);
                         else
+                            if (usa(k+1)-usa(k)) < 0.0 k=k-1; end
                             Pj(1)=Pvsa(k);
                             Pj(2)=Pvsa(k+1);
                             uj(1)=usa(k);
@@ -493,6 +495,7 @@ function [VetPropSai,Reg]=TermoTab(TipTab,VetPropEnt)
                             u=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),3,k),T);
                             s=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),5,k),T);
                         else
+                            if (hsa(k+1)-hsa(k)) < 0.0 k=k-1; end
                             Pj(1)=Pvsa(k);
                             Pj(2)=Pvsa(k+1);
                             hj(1)=hsa(k);
@@ -551,6 +554,7 @@ function [VetPropSai,Reg]=TermoTab(TipTab,VetPropEnt)
                             u=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),3,k),T);
                             h=interp1(TabPvsa(1:n(k),1,k),TabPvsa(1:n(k),4,k),T);
                         else
+                            if (ssa(k+1)-ssa(k)) < 0.0 k=k-1; end
                             Pj(1)=Pvsa(k);
                             Pj(2)=Pvsa(k+1);
                             sj(1)=ssa(k);
